@@ -50,20 +50,13 @@ def _prefix_if_non_local_file_entry(
 ) -> Sequence[str]:
     if entry[1] == '-e':
         return entry[1:]
-    else:
-        if src == 'local':
-            path = entry[1]
-        else:
-            path = prefix.path(entry[1])
-        return (path,)
+    path = entry[1] if src == 'local' else prefix.path(entry[1])
+    return (path,)
 
 
 def _rscript_exec() -> str:
     r_home = os.environ.get('R_HOME')
-    if r_home is None:
-        return 'Rscript'
-    else:
-        return os.path.join(r_home, 'bin', 'Rscript')
+    return 'Rscript' if r_home is None else os.path.join(r_home, 'bin', 'Rscript')
 
 
 def _entry_validate(entry: Sequence[str]) -> None:
@@ -157,11 +150,10 @@ def _inline_r_setup(code: str) -> str:
     Some behaviour of R cannot be configured via env variables, but can
     only be configured via R options once R has started. These are set here.
     """
-    with_option = f"""\
+    return f"""\
     options(install.packages.compile.from.source = "never")
     {code}
     """
-    return with_option
 
 
 def run_hook(

@@ -96,10 +96,7 @@ class CalledProcessError(RuntimeError):
 
     def __bytes__(self) -> bytes:
         def _indent_or_none(part: bytes | None) -> bytes:
-            if part:
-                return b'\n    ' + part.replace(b'\n', b'\n    ')
-            else:
-                return b' (none)'
+            return b'\n    ' + part.replace(b'\n', b'\n    ') if part else b' (none)'
 
         return b''.join((
             f'command: {self.cmd!r}\n'.encode(),
@@ -210,7 +207,7 @@ if os.name != 'nt':  # pragma: win32 no cover
 
         with open(os.devnull) as devnull, Pty() as pty:
             assert pty.r is not None
-            kwargs.update({'stdin': devnull, 'stdout': pty.w, 'stderr': pty.w})
+            kwargs |= {'stdin': devnull, 'stdout': pty.w, 'stderr': pty.w}
             try:
                 proc = subprocess.Popen(cmd, **kwargs)
             except OSError as e:
@@ -245,15 +242,14 @@ def rmtree(path: str) -> None:
             exc: tuple[type[OSError], OSError, TracebackType],
     ) -> None:
         excvalue = exc[1]
-        if (
-                func in (os.rmdir, os.remove, os.unlink) and
-                excvalue.errno in {errno.EACCES, errno.EPERM}
-        ):
-            for p in (path, os.path.dirname(path)):
-                os.chmod(p, os.stat(p).st_mode | stat.S_IWUSR)
-            func(path)
-        else:
+        if func not in (os.rmdir, os.remove, os.unlink) or excvalue.errno not in {
+            errno.EACCES,
+            errno.EPERM,
+        }:
             raise
+        for p in (path, os.path.dirname(path)):
+            os.chmod(p, os.stat(p).st_mode | stat.S_IWUSR)
+        func(path)
     shutil.rmtree(path, ignore_errors=False, onerror=handle_remove_readonly)
 
 

@@ -33,8 +33,7 @@ def _process_filename_at_once(pattern: Pattern[bytes], filename: str) -> int:
     retv = 0
     with open(filename, 'rb') as f:
         contents = f.read()
-        match = pattern.search(contents)
-        if match:
+        if match := pattern.search(contents):
             retv = 1
             line_no = contents[:match.start()].count(b'\n')
             output.write(f'{filename}:{line_no + 1}:')
@@ -54,9 +53,8 @@ def _process_filename_by_line_negated(
         for line in f:
             if pattern.search(line):
                 return 0
-        else:
-            output.write_line(filename)
-            return 1
+        output.write_line(filename)
+        return 1
 
 
 def _process_filename_at_once_negated(
@@ -65,12 +63,10 @@ def _process_filename_at_once_negated(
 ) -> int:
     with open(filename, 'rb') as f:
         contents = f.read()
-    match = pattern.search(contents)
-    if match:
+    if match := pattern.search(contents):
         return 0
-    else:
-        output.write_line(filename)
-        return 1
+    output.write_line(filename)
+    return 1
 
 
 class Choice(NamedTuple):

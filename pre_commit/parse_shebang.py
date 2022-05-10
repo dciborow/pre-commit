@@ -16,10 +16,7 @@ class ExecutableNotFoundError(OSError):
 
 
 def parse_filename(filename: str) -> tuple[str, ...]:
-    if not os.path.exists(filename):
-        return ()
-    else:
-        return parse_shebang_from_file(filename)
+    return parse_shebang_from_file(filename) if os.path.exists(filename) else ()
 
 
 def find_executable(
@@ -42,8 +39,7 @@ def find_executable(
             joined = os.path.join(path, possible_exe_name)
             if os.path.isfile(joined) and os.access(joined, os.X_OK):
                 return joined
-    else:
-        return None
+    return None
 
 
 def normexe(orig: str) -> str:

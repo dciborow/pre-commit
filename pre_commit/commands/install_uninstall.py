@@ -35,13 +35,12 @@ TEMPLATE_END = '# end templated\n'
 def _hook_types(cfg_filename: str, hook_types: list[str] | None) -> list[str]:
     if hook_types is not None:
         return hook_types
+    try:
+        cfg = load_config(cfg_filename)
+    except InvalidConfigError:
+        return ['pre-commit']
     else:
-        try:
-            cfg = load_config(cfg_filename)
-        except InvalidConfigError:
-            return ['pre-commit']
-        else:
-            return cfg['default_install_hook_types']
+        return cfg['default_install_hook_types']
 
 
 def _hook_paths(

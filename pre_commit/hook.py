@@ -52,9 +52,7 @@ class Hook(NamedTuple):
 
     @classmethod
     def create(cls, src: str, prefix: Prefix, dct: dict[str, Any]) -> Hook:
-        # TODO: have cfgv do this (?)
-        extra_keys = set(dct) - _KEYS
-        if extra_keys:
+        if extra_keys := set(dct) - _KEYS:
             logger.warning(
                 f'Unexpected key(s) present on {src} => {dct["id"]}: '
                 f'{", ".join(sorted(extra_keys))}',

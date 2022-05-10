@@ -33,8 +33,7 @@ def _git_apply(patch: str) -> None:
 
 @contextlib.contextmanager
 def _intent_to_add_cleared() -> Generator[None, None, None]:
-    intent_to_add = git.intent_to_add_files()
-    if intent_to_add:
+    if intent_to_add := git.intent_to_add_files():
         logger.warning('Unstaged intent-to-add files detected.')
 
         xargs(('git', 'rm', '--cached', '--'), intent_to_add)

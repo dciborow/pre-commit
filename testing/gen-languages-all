@@ -18,8 +18,7 @@ def main() -> int:
     print(f'    # BEGIN GENERATED ({sys.argv[0]})')
     for lang in LANGUAGES:
         parts = [f'    {lang!r}: Language(name={lang!r}']
-        for k in FIELDS:
-            parts.append(f', {k}={lang}.{k}')
+        parts.extend(f', {k}={lang}.{k}' for k in FIELDS)
         parts.append('),  # noqa: E501')
         print(''.join(parts))
     print('    # END GENERATED')

@@ -248,8 +248,7 @@ def test_install_idempotent(tempdir_factory, store):
 def _path_without_us():
     # Choose a path which *probably* doesn't include us
     env = dict(os.environ)
-    exe = find_executable('pre-commit', _environ=env)
-    while exe:
+    while exe := find_executable('pre-commit', _environ=env):
         parts = env['PATH'].split(os.pathsep)
         after = [
             x for x in parts
@@ -258,7 +257,6 @@ def _path_without_us():
         if parts == after:
             raise AssertionError(exe, parts)
         env['PATH'] = os.pathsep.join(after)
-        exe = find_executable('pre-commit', _environ=env)
     return env['PATH']
 
 

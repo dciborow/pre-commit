@@ -232,11 +232,7 @@ def _compute_cols(hooks: Sequence[Hook]) -> int:
 
         Hook name...(no files to check) Skipped
     """
-    if hooks:
-        name_len = max(_len_cjk(hook.name) for hook in hooks)
-    else:
-        name_len = 0
-
+    name_len = max(_len_cjk(hook.name) for hook in hooks) if hooks else 0
     cols = name_len + 3 + len(NO_FILES) + 1 + len(SKIPPED)
     return max(cols, 80)
 

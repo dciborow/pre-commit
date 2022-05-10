@@ -34,9 +34,8 @@ def _read_state(prefix: Prefix, venv: str) -> object | None:
     filename = _state_filename(prefix, venv)
     if not os.path.exists(filename):
         return None
-    else:
-        with open(filename) as f:
-            return json.load(f)
+    with open(filename) as f:
+        return json.load(f)
 
 
 def _write_state(prefix: Prefix, venv: str, state: object) -> None:
@@ -79,8 +78,7 @@ def _hook_install(hook: Hook) -> None:
     lang.install_environment(
         hook.prefix, hook.language_version, hook.additional_dependencies,
     )
-    health_error = lang.health_check(hook.prefix, hook.language_version)
-    if health_error:
+    if health_error := lang.health_check(hook.prefix, hook.language_version):
         raise AssertionError(
             f'BUG: expected environment for {hook.language} to be healthy '
             f'immediately after install, please open an issue describing '
@@ -97,7 +95,7 @@ def _hook(
 ) -> dict[str, Any]:
     ret, rest = dict(hook_dicts[0]), hook_dicts[1:]
     for dct in rest:
-        ret.update(dct)
+        ret |= dct
 
     version = ret['minimum_pre_commit_version']
     if parse_version(version) > parse_version(C.VERSION):

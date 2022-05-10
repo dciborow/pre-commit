@@ -58,10 +58,7 @@ def environment_dir(d: str, language_version: str) -> str: ...
 
 
 def environment_dir(d: str | None, language_version: str) -> str | None:
-    if d is None:
-        return None
-    else:
-        return f'{d}-{language_version}'
+    return None if d is None else f'{d}-{language_version}'
 
 
 def assert_version_default(binary: str, version: str) -> None:
@@ -103,15 +100,12 @@ def no_install(
 def target_concurrency(hook: Hook) -> int:
     if hook.require_serial or 'PRE_COMMIT_NO_CONCURRENCY' in os.environ:
         return 1
-    else:
-        # Travis appears to have a bunch of CPUs, but we can't use them all.
-        if 'TRAVIS' in os.environ:
-            return 2
-        else:
-            try:
-                return multiprocessing.cpu_count()
-            except NotImplementedError:
-                return 1
+    if 'TRAVIS' in os.environ:
+        return 2
+    try:
+        return multiprocessing.cpu_count()
+    except NotImplementedError:
+        return 1
 
 
 def _shuffled(seq: Sequence[str]) -> list[str]:
