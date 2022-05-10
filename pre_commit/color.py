@@ -72,10 +72,7 @@ def format_color(text: str, color: str, use_color_setting: bool) -> str:
         color - The color start string
         use_color_setting - Whether or not to color
     """
-    if use_color_setting:
-        return f'{color}{text}{NORMAL}'
-    else:
-        return text
+    return f'{color}{text}{NORMAL}' if use_color_setting else text
 
 
 COLOR_CHOICES = ('auto', 'always', 'never')

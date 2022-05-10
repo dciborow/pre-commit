@@ -385,15 +385,14 @@ class InvalidConfigError(FatalError):
 
 def ordered_load_normalize_legacy_config(contents: str) -> dict[str, Any]:
     data = yaml_load(contents)
-    if isinstance(data, list):
-        logger.warning(
-            'normalizing pre-commit configuration to a top-level map.  '
-            'support for top level list will be removed in a future version.  '
-            'run: `pre-commit migrate-config` to automatically fix this.',
-        )
-        return {'repos': data}
-    else:
+    if not isinstance(data, list):
         return data
+    logger.warning(
+        'normalizing pre-commit configuration to a top-level map.  '
+        'support for top level list will be removed in a future version.  '
+        'run: `pre-commit migrate-config` to automatically fix this.',
+    )
+    return {'repos': data}
 
 
 load_config = functools.partial(

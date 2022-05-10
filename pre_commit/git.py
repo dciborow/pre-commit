@@ -17,11 +17,7 @@ NO_FS_MONITOR = ('-c', 'core.useBuiltinFSMonitor=false')
 
 
 def zsplit(s: str) -> list[str]:
-    s = s.strip('\0')
-    if s:
-        return s.split('\0')
-    else:
-        return []
+    return s.split('\0') if (s := s.strip('\0')) else []
 
 
 def no_git_env(
@@ -252,7 +248,4 @@ def get_best_candidate_tag(rev: str, git_repo: str) -> str:
     tags = cmd_output(
         'git', *NO_FS_MONITOR, 'tag', '--points-at', rev, cwd=git_repo,
     )[1].splitlines()
-    for tag in tags:
-        if '.' in tag:
-            return tag
-    return rev
+    return next((tag for tag in tags if '.' in tag), rev)

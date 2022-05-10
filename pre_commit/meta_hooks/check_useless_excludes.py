@@ -21,10 +21,10 @@ def exclude_matches_any(
     if exclude == '^$':
         return True
     include_re, exclude_re = re.compile(include), re.compile(exclude)
-    for filename in filenames:
-        if include_re.search(filename) and exclude_re.search(filename):
-            return True
-    return False
+    return any(
+        include_re.search(filename) and exclude_re.search(filename)
+        for filename in filenames
+    )
 
 
 def check_useless_excludes(config_file: str) -> int:

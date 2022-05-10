@@ -108,9 +108,7 @@ def make_config_from_repo(repo_path, rev=None, hooks=None, check=True):
         wrapped = validate({'repos': [config]}, CONFIG_SCHEMA)
         wrapped = apply_defaults(wrapped, CONFIG_SCHEMA)
         config, = wrapped['repos']
-        return config
-    else:
-        return config
+    return config
 
 
 def read_config(directory, config_file=C.CONFIG_FILE):

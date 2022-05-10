@@ -76,10 +76,7 @@ def in_env(
 def health_check(prefix: Prefix, language_version: str) -> str | None:
     with in_env(prefix, language_version):
         retcode, _, _ = cmd_output_b('node', '--version', retcode=None)
-        if retcode != 0:  # pragma: win32 no cover
-            return f'`node --version` returned {retcode}'
-        else:
-            return None
+        return f'`node --version` returned {retcode}' if retcode != 0 else None
 
 
 def install_environment(

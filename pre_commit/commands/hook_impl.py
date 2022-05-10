@@ -28,11 +28,7 @@ def _run_legacy(
             f'https://github.com/pre-commit/pre-commit/issues',
         )
 
-    if hook_type == 'pre-push':
-        stdin = sys.stdin.buffer.read()
-    else:
-        stdin = b''
-
+    stdin = sys.stdin.buffer.read() if hook_type == 'pre-push' else b''
     # not running in legacy mode
     legacy_hook = os.path.join(hook_dir, f'{hook_type}.legacy')
     if not os.access(legacy_hook, os.X_OK):
@@ -127,14 +123,21 @@ def _pre_push_ns(
                 remote_name=remote_name, remote_url=remote_url,
             )
         else:
-            # ancestors not found in remote
-            ancestors = subprocess.check_output((
-                'git', 'rev-list', local_sha, '--topo-order', '--reverse',
-                '--not', f'--remotes={remote_name}',
-            )).decode().strip()
-            if not ancestors:
-                continue
-            else:
+            if (
+                ancestors := subprocess.check_output(
+                    (
+                        'git',
+                        'rev-list',
+                        local_sha,
+                        '--topo-order',
+                        '--reverse',
+                        '--not',
+                        f'--remotes={remote_name}',
+                    )
+                )
+                .decode()
+                .strip()
+            ):
                 first_ancestor = ancestors.splitlines()[0]
                 cmd = ('git', 'rev-list', '--max-parents=0', local_sha)
                 roots = set(subprocess.check_output(cmd).decode().splitlines())
@@ -147,16 +150,15 @@ def _pre_push_ns(
                         remote_branch=remote_branch,
                         local_branch=local_branch,
                     )
-                else:
-                    rev_cmd = ('git', 'rev-parse', f'{first_ancestor}^')
-                    source = subprocess.check_output(rev_cmd).decode().strip()
-                    return _ns(
-                        'pre-push', color,
-                        from_ref=source, to_ref=local_sha,
-                        remote_name=remote_name, remote_url=remote_url,
-                        remote_branch=remote_branch,
-                        local_branch=local_branch,
-                    )
+                rev_cmd = ('git', 'rev-parse', f'{first_ancestor}^')
+                source = subprocess.check_output(rev_cmd).decode().strip()
+                return _ns(
+                    'pre-push', color,
+                    from_ref=source, to_ref=local_sha,
+                    remote_name=remote_name, remote_url=remote_url,
+                    remote_branch=remote_branch,
+                    local_branch=local_branch,
+                )
 
     # nothing to push
     return None
@@ -232,7 +234,4 @@ def hook_impl(
     retv, stdin = _run_legacy(hook_type, hook_dir, args)
     _validate_config(retv, config, skip_on_missing_config)
     ns = _run_ns(hook_type, color, args, stdin)
-    if ns is None:
-        return retv
-    else:
-        return retv | run(config, store, ns)
+    return retv if ns is None else retv | run(config, store, ns)

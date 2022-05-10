@@ -69,10 +69,8 @@ def _find_by_py_launcher(
         num = version[len('python'):]
         cmd = ('py', f'-{num}', '-c', 'import sys; print(sys.executable)')
         env = dict(os.environ, PYTHONIOENCODING='UTF-8')
-        try:
+        with contextlib.suppress(CalledProcessError):
             return cmd_output(*cmd, env=env)[1].strip()
-        except CalledProcessError:
-            pass
     return None
 
 

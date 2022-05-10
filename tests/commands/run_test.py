@@ -827,9 +827,7 @@ def test_local_hook_passes(cap_out, store, repo_with_passing_hook):
             {
                 'id': 'identity-copy',
                 'name': 'identity-copy',
-                'entry': '{} -m pre_commit.meta_hooks.identity'.format(
-                    shlex.quote(sys.executable),
-                ),
+                'entry': f'{shlex.quote(sys.executable)} -m pre_commit.meta_hooks.identity',
                 'language': 'system',
                 'files': r'\.py$',
             },
@@ -841,6 +839,7 @@ def test_local_hook_passes(cap_out, store, repo_with_passing_hook):
             },
         ],
     }
+
     add_config_to_repo(repo_with_passing_hook, config)
 
     with open('placeholder.py', 'w') as staged_file:
@@ -1089,9 +1088,7 @@ def test_args_hook_only(cap_out, store, repo_with_passing_hook):
             {
                 'id': 'identity-copy',
                 'name': 'identity-copy',
-                'entry': '{} -m pre_commit.meta_hooks.identity'.format(
-                    shlex.quote(sys.executable),
-                ),
+                'entry': f'{shlex.quote(sys.executable)} -m pre_commit.meta_hooks.identity',
                 'language': 'system',
                 'files': r'\.py$',
                 'stages': ['commit'],
@@ -1104,6 +1101,7 @@ def test_args_hook_only(cap_out, store, repo_with_passing_hook):
             },
         ],
     }
+
     add_config_to_repo(repo_with_passing_hook, config)
     stage_a_file()
     ret, printed = _do_run(

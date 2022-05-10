@@ -89,8 +89,7 @@ def _check_hooks_still_exist_at_rev(
 
     # See if any of our hooks were deleted with the new commits
     hooks = {hook['id'] for hook in repo_config['hooks']}
-    hooks_missing = hooks - {hook['id'] for hook in manifest}
-    if hooks_missing:
+    if hooks_missing := hooks - {hook['id'] for hook in manifest}:
         raise RepositoryCannotBeUpdatedError(
             f'Cannot update because the update target is missing these '
             f'hooks:\n{", ".join(sorted(hooks_missing))}',
@@ -178,10 +177,7 @@ def autoupdate(
 
         if new_info.rev != info.rev:
             changed = True
-            if new_info.frozen:
-                updated_to = f'{new_info.frozen} (frozen)'
-            else:
-                updated_to = new_info.rev
+            updated_to = f'{new_info.frozen} (frozen)' if new_info.frozen else new_info.rev
             msg = f'updating {info.rev} -> {updated_to}.'
             output.write_line(msg)
             rev_infos.append(new_info)

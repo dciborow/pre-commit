@@ -100,7 +100,7 @@ def test_clone_cleans_up_on_checkout_failure(store):
     repo_dirs = [
         d for d in os.listdir(store.directory) if d.startswith('repo')
     ]
-    assert repo_dirs == []
+    assert not repo_dirs
 
 
 def test_clone_when_repo_already_exists(store):

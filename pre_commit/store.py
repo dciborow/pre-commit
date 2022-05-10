@@ -104,10 +104,7 @@ class Store:
 
     @classmethod
     def db_repo_name(cls, repo: str, deps: Sequence[str]) -> str:
-        if deps:
-            return f'{repo}:{",".join(sorted(deps))}'
-        else:
-            return repo
+        return f'{repo}:{",".join(sorted(deps))}' if deps else repo
 
     def _new_repo(
             self,
